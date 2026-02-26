@@ -19,6 +19,10 @@ env/
 *.swo
 *~
 
+# Editor configurations (keep .editorconfig)
+.eslintrc*
+.prettierrc*
+
 # OS files
 .DS_Store
 Thumbs.db

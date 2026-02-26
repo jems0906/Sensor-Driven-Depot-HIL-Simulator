@@ -116,10 +116,22 @@
             color: #991b1b;
             border: 1px solid #fecaca;
         }
+        .critical-fault { color: #dc2626; }
+        .no-critical { color: #059669; }
+        /* Performance chart container */
         .chart-container {
             position: relative;
             height: 300px;
             margin: 1rem 0;
+        }
+        .chart-card {
+            margin-top: 2rem;
+        }
+        .critical-fault {
+            color: #dc2626;
+        }
+        .scenario-header {
+            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -141,10 +153,10 @@
         {% endwith %}
 
         <div class="run-controls">
-            <h3 style="margin-bottom: 1rem;">🚀 Run New Scenario</h3>
+            <h3 class="scenario-header">🚀 Run New Scenario</h3>
             <form method="POST" action="/run_scenario" class="form-group">
-                <label for="scenario">Scenario:</label>
-                <select id="scenario" name="scenario">
+                <label for="scenario-select">Scenario:</label>
+                <select name="scenario" id="scenario-select" title="Select simulation scenario to run">
                     <option value="normal">Normal Operation</option>
                     <option value="charger_failure">Charger Failure</option>
                     <option value="gate_stuck">Gate Stuck</option>
@@ -205,7 +217,7 @@
         </div>
 
         <!-- Performance Chart -->
-        <div class="card" style="margin-top: 2rem;">
+        <div class="card chart-card">
             <h2 class="card-title">📈 Scenario Performance Comparison</h2>
             <div class="chart-container">
                 <canvas id="performanceChart"></canvas>
@@ -213,7 +225,7 @@
         </div>
 
         <!-- Recent Runs -->
-        <div class="card" style="margin-top: 2rem;">
+        <div class="card chart-card">
             <h2 class="card-title">🕒 Recent Simulation Runs</h2>
             <table>
                 <thead>
@@ -236,7 +248,7 @@
                         <td>
                             <span>{{ run.total_faults or 0 }}</span>
                             {% if run.critical_faults > 0 %}
-                            <span style="color: #dc2626;">({{ run.critical_faults }} critical)</span>
+                            <span class="critical-fault">({{ run.critical_faults }} critical)</span>
                             {% endif %}
                         </td>
                         <td>
@@ -258,7 +270,9 @@
     <script>
         // Performance chart
         const ctx = document.getElementById('performanceChart').getContext('2d');
+        /* eslint-disable */
         const performanceData = {{ performance.scenario_metrics | tojson | safe }};
+        /* eslint-enable */
         
         new Chart(ctx, {
             type: 'bar',

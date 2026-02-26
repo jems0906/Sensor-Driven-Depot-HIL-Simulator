@@ -155,11 +155,7 @@
                 <div class="chart-container">
                     <canvas id="gateChart"></canvas>
                 </div>
-                <ul class="sensor-list">
-                    {% for sensor_name in timeline.gates.sensors.keys() %}
-                    <li class="sensor-item">{{ sensor_name }}</li>
-                    {% endfor %}
-                </ul>
+                <ul class="sensor-list">{% for sensor_name in timeline.gates.sensors.keys() %}<li class="sensor-item">{{ sensor_name }}</li>{% endfor %}</ul>
             </div>
 
             <!-- Occupancy Sensors -->
@@ -168,11 +164,7 @@
                 <div class="chart-container">
                     <canvas id="occupancyChart"></canvas>
                 </div>
-                <ul class="sensor-list">
-                    {% for sensor_name in timeline.occupancy.sensors.keys() %}
-                    <li class="sensor-item">{{ sensor_name }}</li>
-                    {% endfor %}
-                </ul>
+                <ul class="sensor-list">{% for sensor_name in timeline.occupancy.sensors.keys() %}<li class="sensor-item">{{ sensor_name }}</li>{% endfor %}</ul>
             </div>
 
             <!-- Charger Status -->
@@ -181,11 +173,7 @@
                 <div class="chart-container">
                     <canvas id="chargerChart"></canvas>
                 </div>
-                <ul class="sensor-list">
-                    {% for sensor_name in timeline.chargers.sensors.keys() %}
-                    <li class="sensor-item">{{ sensor_name }}</li>
-                    {% endfor %}
-                </ul>
+                <ul class="sensor-list">{% for sensor_name in timeline.chargers.sensors.keys() %}<li class="sensor-item">{{ sensor_name }}</li>{% endfor %}</ul>
             </div>
         </div>
 
@@ -207,7 +195,9 @@
     </main>
 
     <script>
+        /* eslint-disable */
         const timelineData = {{ timeline | tojson | safe }};
+        /* eslint-enable */
 
         function createTimelineChart(canvasId, sensorData, title, color) {
             const canvas = document.getElementById(canvasId);
