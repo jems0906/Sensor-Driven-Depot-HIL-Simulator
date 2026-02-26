@@ -155,7 +155,9 @@
                 <div class="chart-container">
                     <canvas id="gateChart"></canvas>
                 </div>
-                <ul class="sensor-list">{% for sensor_name in timeline.gates.sensors.keys() %}<li class="sensor-item">{{ sensor_name }}</li>{% endfor %}</ul>
+                <ul class="sensor-list" id="gate-sensors">
+                    <!-- Populated by JavaScript -->
+                </ul>
             </div>
 
             <!-- Occupancy Sensors -->
@@ -164,7 +166,9 @@
                 <div class="chart-container">
                     <canvas id="occupancyChart"></canvas>
                 </div>
-                <ul class="sensor-list">{% for sensor_name in timeline.occupancy.sensors.keys() %}<li class="sensor-item">{{ sensor_name }}</li>{% endfor %}</ul>
+                <ul class="sensor-list" id="occupancy-sensors">
+                    <!-- Populated by JavaScript -->
+                </ul>
             </div>
 
             <!-- Charger Status -->
@@ -173,7 +177,9 @@
                 <div class="chart-container">
                     <canvas id="chargerChart"></canvas>
                 </div>
-                <ul class="sensor-list">{% for sensor_name in timeline.chargers.sensors.keys() %}<li class="sensor-item">{{ sensor_name }}</li>{% endfor %}</ul>
+                <ul class="sensor-list" id="charger-sensors">
+                    <!-- Populated by JavaScript -->
+                </ul>
             </div>
         </div>
 
@@ -194,10 +200,35 @@
         {% endif %}
     </main>
 
+    <!-- Timeline data injection -->
+    <script type="application/json" id="timeline-data">{{ timeline | tojson | safe }}</script>
+
     <script>
-        /* eslint-disable */
-        const timelineData = {{ timeline | tojson | safe }};
-        /* eslint-enable */
+        // Timeline data from server
+        var timelineData = {};
+        try {
+            const dataElement = document.getElementById('timeline-data');
+            if (dataElement) {
+                timelineData = JSON.parse(dataElement.textContent);
+            }
+        } catch (e) {
+            console.warn('Failed to load timeline data:', e);
+            timelineData = {};
+        }
+
+        function populateSensorList(listId, sensorData) {
+            const listElement = document.getElementById(listId);
+            if (!listElement || !sensorData.sensors) return;
+            
+            const sensors = Object.keys(sensorData.sensors);
+            listElement.innerHTML = '';
+            sensors.forEach(sensorName => {
+                const listItem = document.createElement('li');
+                listItem.className = 'sensor-item';
+                listItem.textContent = sensorName;
+                listElement.appendChild(listItem);
+            });
+        }
 
         function createTimelineChart(canvasId, sensorData, title, color) {
             const canvas = document.getElementById(canvasId);
@@ -274,14 +305,17 @@
         // Create charts for each sensor type
         if (timelineData.gates) {
             createTimelineChart('gateChart', timelineData.gates, 'Gate States Over Time', '#2563eb');
+            populateSensorList('gate-sensors', timelineData.gates);
         }
         
         if (timelineData.occupancy) {
             createTimelineChart('occupancyChart', timelineData.occupancy, 'Spot Occupancy Over Time', '#059669');
+            populateSensorList('occupancy-sensors', timelineData.occupancy);
         }
         
         if (timelineData.chargers) {
             createTimelineChart('chargerChart', timelineData.chargers, 'Charger Status Over Time', '#dc2626');
+            populateSensorList('charger-sensors', timelineData.chargers);
         }
     </script>
 </body>

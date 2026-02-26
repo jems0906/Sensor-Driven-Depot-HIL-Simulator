@@ -267,12 +267,23 @@
         </div>
     </main>
 
+    <!-- Performance data injection -->
+    <script type="application/json" id="performance-data">{{ performance.scenario_metrics | tojson | safe }}</script>
+
     <script>
         // Performance chart
         const ctx = document.getElementById('performanceChart').getContext('2d');
-        /* eslint-disable */
-        const performanceData = {{ performance.scenario_metrics | tojson | safe }};
-        /* eslint-enable */
+        // Performance data from server
+        var performanceData = [];
+        try {
+            const dataElement = document.getElementById('performance-data');
+            if (dataElement) {
+                performanceData = JSON.parse(dataElement.textContent);
+            }
+        } catch (e) {
+            console.warn('Failed to load performance data:', e);
+            performanceData = [];
+        }
         
         new Chart(ctx, {
             type: 'bar',
